@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,        // ← allows importing .json files
+    "forceConsistentCasingInFileNames": true  // ← prevents case-sensitivity bugs
+  },
+  "include": ["src/**/*", "prisma.config.ts"],  // ← include prisma config too
+  "exclude": ["node_modules", "dist"]
+}
