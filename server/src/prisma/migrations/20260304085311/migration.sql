@@ -1,0 +1,19 @@
+/*
+  Warnings:
+
+  - A unique constraint covering the columns `[googleId]` on the table `User` will be added. If there are existing duplicate values, this will fail.
+
+*/
+-- CreateEnum
+CREATE TYPE "Role" AS ENUM ('ADMIN', 'USER');
+
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "avatar" TEXT,
+ADD COLUMN     "googleId" TEXT,
+ADD COLUMN     "provider" TEXT NOT NULL DEFAULT 'local',
+ADD COLUMN     "role" "Role" NOT NULL DEFAULT 'USER',
+ALTER COLUMN "password" DROP NOT NULL,
+ALTER COLUMN "password" DROP DEFAULT;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_googleId_key" ON "User"("googleId");

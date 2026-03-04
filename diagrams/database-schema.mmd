@@ -1,0 +1,30 @@
+erDiagram
+    User ||--o{ UserPost : "has many"
+    User ||--o{ RefreshToken : "has many"
+
+    User {
+        int id PK
+        string name
+        string email UK
+        string password "nullable, for OAuth users"
+        string googleId UK "nullable, unique"
+        string provider "local or google"
+        string avatar "nullable, profile picture URL"
+        enum role "ADMIN or USER"
+        datetime createdAt
+    }
+
+    UserPost {
+        int id PK
+        string description
+        datetime creadtedat
+        int userID FK
+    }
+
+    RefreshToken {
+        int id PK
+        string token UK
+        int userID FK
+        datetime expiresAt
+        datetime creadtedAt
+    }

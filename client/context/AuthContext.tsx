@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { login as loginApi, logout as logoutApi, register as registerApi, getCurrentUser, LoginCredentials, SignupCredentials, User } from "@/api/authApi";
 
 interface AuthContextType {
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
     const queryClient = useQueryClient();
+    const router = useRouter();
 
     // Query to get current user (this will fail if not authenticated)
     const { data: user, isLoading, error } = useQuery({
@@ -57,6 +59,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             // Clear user data from cache
             queryClient.setQueryData(["currentUser"], null);
             queryClient.clear();
+            // Redirect to home page
+            router.push("/");
         },
     });
 

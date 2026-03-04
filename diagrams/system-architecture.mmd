@@ -1,0 +1,50 @@
+flowchart TB
+    subgraph Client["Frontend - Next.js Port 3000"]
+        LoginPage[Login/Signup Page]
+        GoogleBtn[GoogleLoginButton Component]
+        Dashboard[Dashboard Page]
+        AuthContext[AuthContext Provider]
+    end
+
+    subgraph Server["Backend - Express Port 5000"]
+        subgraph Routes["Routes Layer"]
+            AuthRoutes[auth.routes.ts]
+        end
+
+        subgraph Controllers["Controllers Layer"]
+            AuthController[auth.controller.ts]
+        end
+
+        subgraph Middleware["Middleware"]
+            AuthMiddleware[authenticateToken JWT Verification]
+            ErrorHandler[Global Error Handler]
+            CORS[CORS Config]
+        end
+
+        subgraph Lib["Helper Functions"]
+            OAuth[oauth.ts]
+            JWT[token.ts]
+            Bcrypt[bcrypt.ts]
+        end
+    end
+
+    subgraph External["External Services"]
+        GoogleAPI[Google OAuth API]
+        Database[(PostgreSQL Neon Database)]
+    end
+
+    LoginPage --> GoogleBtn
+    GoogleBtn --> AuthRoutes
+    AuthRoutes --> AuthController
+    AuthController --> OAuth
+    OAuth --> GoogleAPI
+    GoogleAPI --> AuthController
+    AuthController --> Database
+    AuthController --> Client
+    AuthContext --> AuthRoutes
+    AuthMiddleware --> JWT
+
+    style OAuth fill:#4285f4,color:#fff
+    style GoogleAPI fill:#ea4335,color:#fff
+    style Database fill:#336791,color:#fff
+    style AuthMiddleware fill:#fbbc04,color:#000

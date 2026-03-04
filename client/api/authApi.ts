@@ -78,7 +78,7 @@ export const getCurrentUser = async (): Promise<User> => {
  * Get all users
  */
 export const getUsers = async (): Promise<User[]> => {
-    const { data } = await api.get("/getusers");
+    const { data } = await api.get("/users");
     return data;
 };
 

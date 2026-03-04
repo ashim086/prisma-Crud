@@ -17,6 +17,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import type { SignupCredentials } from "@/api/authApi";
+import GoogleLoginButton from "./GoogleLoginButton";
 
 interface SignupFormData extends SignupCredentials {
   confirmPassword: string;
@@ -34,7 +35,7 @@ export function SignupDialog({ isOpen, onClose, onLoginClick }: SignupDialogProp
   const [showLogin, setShowLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<SignupFormData>({
     defaultValues: {
       name: "",
@@ -43,7 +44,7 @@ export function SignupDialog({ isOpen, onClose, onLoginClick }: SignupDialogProp
       confirmPassword: "",
     },
   });
-  
+
   const password = watch("password");
 
   const onSubmit = async (data: SignupFormData) => {
@@ -53,18 +54,13 @@ export function SignupDialog({ isOpen, onClose, onLoginClick }: SignupDialogProp
         password: data.password,
         name: data.name,
       });
-      
+
       // Close dialog and redirect to dashboard
       onClose?.();
       router.push("/dashboard");
     } catch (err) {
       // Error is handled by TanStack Query
     }
-  };
-
-  const handleGoogleSignIn = () => {
-    console.log("Google sign in clicked");
-    // Add your Google sign in logic here
   };
 
   return (
@@ -196,29 +192,7 @@ export function SignupDialog({ isOpen, onClose, onLoginClick }: SignupDialogProp
                 </div>
               </div>
 
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-white transition-colors"
-                onClick={handleGoogleSignIn}
-              >
-                <svg
-                  className="mr-2 h-4 w-4"
-                  aria-hidden="true"
-                  focusable="false"
-                  data-prefix="fab"
-                  data-icon="google"
-                  role="img"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 488 512"
-                >
-                  <path
-                    fill="currentColor"
-                    d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
-                  ></path>
-                </svg>
-                Continue with Google
-              </Button>
+              <GoogleLoginButton />
 
               <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{" "}

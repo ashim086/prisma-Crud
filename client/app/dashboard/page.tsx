@@ -19,7 +19,7 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (!authLoading && !isAuthenticated) {
-            router.push("/login");
+            router.push("/");
         }
     }, [authLoading, isAuthenticated, router]);
 
@@ -91,7 +91,7 @@ export default function DashboardPage() {
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
                             <p className="mt-2 text-gray-600">Loading users...</p>
                         </div>
-                    ) : users && users.length > 0 ? (
+                    ) : users?.data && users?.data?.length > 0 ? (
                         <div className="overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200">
                                 <thead className="bg-gray-50">
@@ -111,7 +111,7 @@ export default function DashboardPage() {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-200">
-                                    {users.map((u) => (
+                                    {users?.data?.map((u) => (
                                         <tr key={u.id} className="hover:bg-gray-50">
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                                                 {u.id}

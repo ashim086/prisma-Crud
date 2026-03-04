@@ -4,8 +4,8 @@ import crypto from "crypto";
 dotenv.config();
 
 const private_key = process.env.JWT_PRIVATE_KEY || ''
-// const expiresIn = process.env.JWT_EXPIRES_IN ?? "15m"
-const expiresIn = "15m"
+const expiresIn = process.env.JWT_EXPIRES_IN ?? "15m"
+// const expiresIn = "15m"
 
 
 export const generateToken = (payload: any) => {

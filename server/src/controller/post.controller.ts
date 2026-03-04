@@ -2,13 +2,19 @@ import { prisma } from "../config/db";
 import asyncHandler from "../lib/asyncHandler";
 import successMsG from "../lib/responseHandler";
 import customError from "../lib/customError";
+import { AuthRequest } from "../middlewares/auth.middleware";
 
 /**
  * Create a post for a user
  */
-export const createPost = asyncHandler(async (req, res) => {
+export const createPost = asyncHandler(async (req: AuthRequest, res) => {
     const { userId } = req.params;
     const { description } = req.body;
+
+    // Example: Only allow users to create posts for themselves
+    if (req.user?.id !== Number(userId)) {
+        throw new customError(403, "You can only create posts for yourself");
+    }
 
     // Validate required fields
     if (!description) {
@@ -165,7 +171,7 @@ export const getPostById = asyncHandler(async (req, res) => {
 /**
  * Update a post by ID
  */
-export const updatePost = asyncHandler(async (req, res) => {
+export const updatePost = asyncHandler(async (req: AuthRequest, res) => {
     const { id } = req.params;
     const { description } = req.body;
 
@@ -180,6 +186,11 @@ export const updatePost = asyncHandler(async (req, res) => {
 
     if (!existingPost) {
         throw new customError(404, "Post not found");
+    }
+
+    // Example: Only allow users to update their own posts
+    if (req.user?.id !== existingPost.userID) {
+        throw new customError(403, "You can only update your own posts");
     }
 
     // Update post

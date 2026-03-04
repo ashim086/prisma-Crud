@@ -1,0 +1,38 @@
+stateDiagram-v2
+    [*] --> Unauthenticated
+    
+    Unauthenticated --> InitiatingOAuth: User clicks "Continue with Google"
+    
+    InitiatingOAuth --> GeneratingState: Backend generates state token
+    GeneratingState --> StoringState: Store state in cookie
+    StoringState --> RedirectingToGoogle: Redirect to Google OAuth
+    
+    RedirectingToGoogle --> GoogleLogin: User at Google login page
+    GoogleLogin --> GoogleAuthenticated: User enters credentials
+    GoogleLogin --> Cancelled: User clicks cancel
+    Cancelled --> [*]: Redirect to home page
+    
+    GoogleAuthenticated --> Callback: Google redirects with code & state
+    
+    Callback --> ValidatingState: Backend validates state
+    ValidatingState --> InvalidState: State mismatch
+    InvalidState --> [*]: Redirect to home page
+    
+    ValidatingState --> ExchangingCode: State valid
+    ExchangingCode --> FetchingUserInfo: Got access token
+    
+    FetchingUserInfo --> CheckingUser: Got user info from Google
+    
+    CheckingUser --> UserExists: User found in DB
+    CheckingUser --> CreatingUser: User not found
+    
+    UserExists --> UpdatingUser: Update with Google info
+    CreatingUser --> GeneratingTokens: New user created
+    UpdatingUser --> GeneratingTokens: User updated
+    
+    GeneratingTokens --> StoringRefreshToken: JWT tokens generated
+    StoringRefreshToken --> SettingCookies: Tokens stored in DB
+    SettingCookies --> Authenticated: Cookies set
+    
+    Authenticated --> Dashboard: Redirect to dashboard
+    Dashboard --> [*]

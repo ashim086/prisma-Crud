@@ -1,0 +1,45 @@
+flowchart LR
+    subgraph OAuth_Flow["OAuth Authentication"]
+        A[User clicks Google button]
+        B[Backend sets oauth_state cookie]
+        C[Google redirects back]
+        D[Backend validates state from cookie]
+        E[Backend clears oauth_state cookie]
+    end
+
+    subgraph Token_Generation["Token Generation"]
+        F[Generate JWT accessToken 15 min expiry]
+        G[Generate refreshToken 7 days expiry]
+        H[Store refreshToken in DB]
+    end
+
+    subgraph Cookie_Setting["Cookie Setting"]
+        I[Set accessToken cookie httpOnly, secure, sameSite]
+        J[Set refreshToken cookie httpOnly, secure, sameSite]
+    end
+
+    subgraph Authenticated_Request["Subsequent Requests"]
+        K[User makes request]
+        L[Cookie auto-sent by browser]
+        M[Middleware extracts accessToken]
+        N[Verify JWT signature]
+        O{Valid?}
+        P[Attach user to req.user]
+        Q[Return 401 Unauthorized]
+    end
+
+    A --> B --> C --> D --> E
+    E --> F
+    F --> G --> H
+    H --> I
+    I --> J
+    J --> K
+    K --> L --> M --> N --> O
+    O -->|Yes| P
+    O -->|No| Q
+
+    style F fill:#34a853
+    style G fill:#34a853
+    style I fill:#fbbc04
+    style J fill:#fbbc04
+    style O fill:#ea4335

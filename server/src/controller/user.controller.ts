@@ -3,11 +3,14 @@ import asyncHandler from "../lib/asyncHandler";
 import successMsG from "../lib/responseHandler";
 import customError from "../lib/customError";
 import { hashPassord } from "../lib/bcrypt";
+import { AuthRequest } from "../middlewares/auth.middleware";
 
 /**
  * Get all users
  */
-export const getAllUsers = asyncHandler(async (req, res) => {
+export const getAllUsers = asyncHandler(async (req: AuthRequest, res) => {
+    // You can access authenticated user info
+    console.log('Request by user:', req.user?.email);
     const users = await prisma.user.findMany({
         select: {
             id: true,
@@ -64,8 +67,11 @@ export const createUser = asyncHandler(async (req, res) => {
 /**
  * Get user by ID
  */
-export const getUserById = asyncHandler(async (req, res) => {
+export const getUserById = asyncHandler(async (req: AuthRequest, res) => {
     const { id } = req.params;
+
+    // You can access the authenticated user's info from req.user
+    console.log('Authenticated user:', req.user);
 
     const user = await prisma.user.findUnique({
         where: {
@@ -89,9 +95,14 @@ export const getUserById = asyncHandler(async (req, res) => {
 /**
  * Update user by ID
  */
-export const updateUser = asyncHandler(async (req, res) => {
+export const updateUser = asyncHandler(async (req: AuthRequest, res) => {
     const { id } = req.params;
     const { name, email, password } = req.body;
+
+    // Example: Only allow users to update their own profile
+    if (req.user?.id !== Number(id)) {
+        throw new customError(403, "You can only update your own profile");
+    }
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
@@ -127,8 +138,13 @@ export const updateUser = asyncHandler(async (req, res) => {
 /**
  * Delete user by ID
  */
-export const deleteUser = asyncHandler(async (req, res) => {
+export const deleteUser = asyncHandler(async (req: AuthRequest, res) => {
     const { id } = req.params;
+
+    // Example: Only allow users to delete their own account
+    if (req.user?.id !== Number(id)) {
+        throw new customError(403, "You can only delete your own account");
+    }
 
     // Check if user exists
     const existingUser = await prisma.user.findUnique({

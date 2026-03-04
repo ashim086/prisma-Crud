@@ -1,0 +1,35 @@
+flowchart TB
+    subgraph Local_Auth["Local Authentication (Email/Password)"]
+        L1[User submits email + password]
+        L2[Backend hashes password with bcrypt]
+        L3[Compare with DB hash]
+        L4[Generate JWT tokens]
+        L5[Set httpOnly cookies]
+    end
+
+    subgraph OAuth_Auth["OAuth Authentication (Google)"]
+        O1[User clicks Google button]
+        O2[Redirect to Google]
+        O3[Google authenticates]
+        O4[Exchange code for token]
+        O5[Fetch user info]
+        O6[Create/Update user in DB - No password stored]
+        O7[Generate JWT tokens]
+        O8[Set httpOnly cookies]
+    end
+
+    subgraph Common["Common Flow"]
+        C1[User authenticated]
+        C2[Access protected routes]
+        C3[Token refresh on expiry]
+        C4[Logout clears cookies]
+    end
+
+    L1 --> L2 --> L3 --> L4 --> L5 --> C1
+    O1 --> O2 --> O3 --> O4 --> O5 --> O6 --> O7 --> O8 --> C1
+    C1 --> C2 --> C3
+    C2 --> C4
+
+    style Local_Auth fill:#e3f2fd
+    style OAuth_Auth fill:#fce4ec
+    style Common fill:#f1f8e9

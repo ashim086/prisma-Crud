@@ -1,0 +1,47 @@
+flowchart TD
+    Start[OAuth Callback Request] --> HasCode{Code Provided?}
+    
+    HasCode -->|No - User Cancelled| R1[Redirect to home page]
+    HasCode -->|Yes| ValidateState{State Valid?}
+    
+    ValidateState -->|No| R2[Clear state cookie - Redirect to home with error]
+    ValidateState -->|Yes| ExchangeCode[Exchange code for token]
+    
+    ExchangeCode --> CodeExchange{Exchange Success?}
+    CodeExchange -->|No| R3[Log error - Redirect to home]
+    CodeExchange -->|Yes| FetchUser[Fetch user info from Google]
+    
+    FetchUser --> FetchSuccess{Fetch Success?}
+    FetchSuccess -->|No| R4[Log error - Redirect to home]
+    FetchSuccess -->|Yes| VerifyEmail{Email Verified?}
+    
+    VerifyEmail -->|No| R5[Redirect to home with error]
+    VerifyEmail -->|Yes| CheckDB[Check user in database]
+    
+    CheckDB --> DBOperation{DB Operation Success?}
+    DBOperation -->|No| R6[Log error - Redirect to home]
+    DBOperation -->|Yes| GenerateTokens[Generate JWT tokens]
+    
+    GenerateTokens --> TokenGen{Token Generation Success?}
+    TokenGen -->|No| R7[Log error - Redirect to home]
+    TokenGen -->|Yes| SetCookies[Set httpOnly cookies]
+    
+    SetCookies --> Redirect[Redirect to dashboard]
+    Redirect --> Success[🎉 User logged in!]
+    
+    R1 --> End[User at home page]
+    R2 --> End
+    R3 --> End
+    R4 --> End
+    R5 --> End
+    R6 --> End
+    R7 --> End
+    
+    style Success fill:#34a853,color:#fff
+    style R1 fill:#ea4335,color:#fff
+    style R2 fill:#ea4335,color:#fff
+    style R3 fill:#ea4335,color:#fff
+    style R4 fill:#ea4335,color:#fff
+    style R5 fill:#ea4335,color:#fff
+    style R6 fill:#ea4335,color:#fff
+    style R7 fill:#ea4335,color:#fff

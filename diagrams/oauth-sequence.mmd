@@ -1,0 +1,45 @@
+sequenceDiagram
+    actor User
+    participant Frontend as Frontend (Next.js)
+    participant Backend as Backend (Express)
+    participant Google as Google OAuth API
+    participant DB as PostgreSQL Database
+
+    User->>Frontend: Click "Continue with Google"
+    Frontend->>Backend: GET /auth/google
+    
+    Backend->>Backend: Generate state token (CSRF)
+    Backend->>Backend: Set oauth_state cookie
+    Backend->>Frontend: Redirect to Google OAuth URL
+    
+    Frontend->>Google: Redirect user to Google login
+    User->>Google: Enter Google credentials
+    Google->>Google: Authenticate user
+    
+    Google->>Backend: Redirect to /auth/google/callback with code and state
+    
+    Backend->>Backend: Validate state token
+    Backend->>Backend: Clear oauth_state cookie
+    
+    Backend->>Google: POST /token - Exchange code for access_token
+    Google->>Backend: Return access_token
+    
+    Backend->>Google: GET /userinfo with access_token
+    Google->>Backend: Return user profile (email, name, picture, googleId)
+    
+    Backend->>DB: Find user by email or googleId
+    
+    alt User exists
+        Backend->>DB: Update user with Google info
+    else User does not exist
+        Backend->>DB: Create new user
+    end
+    
+    DB->>Backend: Return user data
+    
+    Backend->>Backend: Generate JWT tokens (accessToken, refreshToken)
+    Backend->>DB: Store refreshToken
+    Backend->>Backend: Set httpOnly cookies
+    
+    Backend->>Frontend: Redirect to /dashboard
+    Frontend->>User: Show dashboard (logged in)
