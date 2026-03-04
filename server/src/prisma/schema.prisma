@@ -14,11 +14,13 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  name      String     @default("pedro")
-  email     String     @unique
-  createdAt DateTime   @default(now())
-  posts     UserPost[]
+  id            Int            @id @default(autoincrement())
+  name          String         @default("pedro")
+  email         String         @unique
+  password      String         @unique @default("change_me")
+  posts         UserPost[]
+  refreshTokens RefreshToken[]
+  createdAt     DateTime       @default(now())
 }
 
 model UserPost {
@@ -27,4 +29,13 @@ model UserPost {
   creadtedat  DateTime @default(now())
   userID      Int
   user        User     @relation(fields: [userID], references: [id])
+}
+
+model RefreshToken {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  userID     Int
+  user       User     @relation(fields: [userID], references: [id])
+  expiresAt  DateTime
+  creadtedAt DateTime @default(now())
 }
